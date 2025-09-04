@@ -1,7 +1,7 @@
-import VirtualTeamDashboard from "@/components/VirtualTeamDashboard";
+import { MainDashboard } from "@/components/MainDashboard";
 
 const Index = () => {
-  return <VirtualTeamDashboard />;
+  return <MainDashboard />;
 };
 
 export default Index;

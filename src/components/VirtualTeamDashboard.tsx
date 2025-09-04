@@ -123,7 +123,11 @@ const departments: Department[] = [
   }
 ];
 
-export default function VirtualTeamDashboard() {
+interface VirtualTeamDashboardProps {
+  isEmbedded?: boolean;
+}
+
+export function VirtualTeamDashboard({ isEmbedded = false }: VirtualTeamDashboardProps) {
   const { 
     state, 
     updateDepartmentStatus, 
@@ -198,121 +202,117 @@ export default function VirtualTeamDashboard() {
   const progressPercentage = (stats.completedDepartments / stats.totalDepartments) * 100;
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/20 to-accent/20 rounded-full border">
-            <Brain className="w-5 h-5 text-primary" />
-            <span className="text-sm font-medium">Equipe Virtual de IA</span>
-          </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Virtual Dev Team Platform
-          </h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Uma plataforma inteligente que simula uma equipe completa de desenvolvimento, 
-            onde cada departamento é gerenciado por agentes de IA especializados.
-          </p>
-        </div>
-
-        {/* Navigation Tabs */}
-        <Card>
-          <CardContent className="p-0">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 h-12">
-                <TabsTrigger value="dashboard" className="flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4" />
-                  Dashboard
-                </TabsTrigger>
-                <TabsTrigger value="overview" className="flex items-center gap-2">
-                  <Rocket className="w-4 h-4" />
-                  Visão Geral
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </CardContent>
-        </Card>
-
-        {activeTab === "dashboard" && (
-          <>
-            {/* Progress Overview */}
-            <Card className="bg-gradient-to-r from-card via-card to-card/50 border-border/50">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Rocket className="w-5 h-5 text-primary" />
-                  Progresso do Projeto
-                </CardTitle>
-                <CardDescription>
-                  {stats.completedDepartments} de {stats.totalDepartments} departamentos concluídos
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <Progress value={progressPercentage} className="h-2" />
-                  <div className="flex justify-between text-sm text-muted-foreground">
-                    <span>Iniciado</span>
-                    <span>{Math.round(progressPercentage)}% concluído</span>
-                    <span>Deploy</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </>
-        )}
-
-        {activeTab === "dashboard" && (
-          <>
-            {/* Department Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-              {state.departments.map((dept, index) => (
-                <Card 
-                  key={dept.id}
-                  className={`
-                    cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg
-                    ${dept.status === 'in-progress' ? 'ring-2 ring-warning/50 shadow-lg' : ''}
-                    ${dept.status === 'completed' ? 'bg-gradient-to-br from-card to-success/5' : ''}
-                    ${index === state.currentStep ? 'ring-2 ring-primary/50' : ''}
-                  `}
-                  onClick={() => handleDepartmentClick(dept)}
-                >
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center justify-between">
-                      <div className="p-2 rounded-lg bg-primary/10">
-                        {dept.icon}
-                      </div>
-                      {getStatusIcon(dept.status)}
-                    </div>
-                    <CardTitle className="text-sm font-medium leading-tight">
-                      {dept.name}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <p className="text-xs text-muted-foreground mb-3 line-clamp-2">
-                      {dept.description}
-                    </p>
-                    <div className="space-y-2">
-                      <Badge variant={getModelBadgeVariant(dept.llmModel)} className="text-xs">
-                        {dept.llmModel}
-                      </Badge>
-                      {dept.artifacts.length > 0 && (
-                        <div className="text-xs text-muted-foreground">
-                          {dept.artifacts.length} artefato(s)
-                        </div>
-                      )}
-                      {dept.status === 'in-progress' && dept.completionPercentage && (
-                        <div className="w-full">
-                          <Progress value={dept.completionPercentage} className="h-1" />
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+    <div className={isEmbedded ? "space-y-6" : "min-h-screen bg-background p-6"}>
+      <div className={isEmbedded ? "" : "max-w-7xl mx-auto space-y-8"}>
+        {!isEmbedded && (
+          <div className="text-center space-y-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/20 to-accent/20 rounded-full border">
+              <Brain className="w-5 h-5 text-primary" />
+              <span className="text-sm font-medium">Equipe Virtual de IA</span>
             </div>
-          </>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              Virtual Dev Team Platform
+            </h1>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Uma plataforma inteligente que simula uma equipe completa de desenvolvimento, 
+              onde cada departamento é gerenciado por agentes de IA especializados.
+            </p>
+          </div>
         )}
 
-        {activeTab === "overview" && (
+        {!isEmbedded && (
+          <Card>
+            <CardContent className="p-0">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid w-full grid-cols-2 h-12">
+                  <TabsTrigger value="dashboard" className="flex items-center gap-2">
+                    <BarChart3 className="w-4 h-4" />
+                    Dashboard
+                  </TabsTrigger>
+                  <TabsTrigger value="overview" className="flex items-center gap-2">
+                    <Rocket className="w-4 h-4" />
+                    Visão Geral
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </CardContent>
+          </Card>
+        )}
+
+        {(activeTab === "dashboard" || isEmbedded) && !isEmbedded && (
+          <Card className="bg-gradient-to-r from-card via-card to-card/50 border-border/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Rocket className="w-5 h-5 text-primary" />
+                Progresso do Projeto
+              </CardTitle>
+              <CardDescription>
+                {stats.completedDepartments} de {stats.totalDepartments} departamentos concluídos
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <Progress value={progressPercentage} className="h-2" />
+                <div className="flex justify-between text-sm text-muted-foreground">
+                  <span>Iniciado</span>
+                  <span>{Math.round(progressPercentage)}% concluído</span>
+                  <span>Deploy</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {(activeTab === "dashboard" || isEmbedded) && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+            {state.departments.slice(0, isEmbedded ? 5 : undefined).map((dept, index) => (
+              <Card 
+                key={dept.id}
+                className={`
+                  cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg
+                  ${dept.status === 'in-progress' ? 'ring-2 ring-warning/50 shadow-lg' : ''}
+                  ${dept.status === 'completed' ? 'bg-gradient-to-br from-card to-success/5' : ''}
+                  ${index === state.currentStep ? 'ring-2 ring-primary/50' : ''}
+                `}
+                onClick={() => handleDepartmentClick(dept)}
+              >
+                <CardHeader className="pb-2">
+                  <div className="flex items-center justify-between">
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      {dept.icon}
+                    </div>
+                    {getStatusIcon(dept.status)}
+                  </div>
+                  <CardTitle className="text-sm font-medium leading-tight">
+                    {dept.name}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <p className="text-xs text-muted-foreground mb-3 line-clamp-2">
+                    {dept.description}
+                  </p>
+                  <div className="space-y-2">
+                    <Badge variant={getModelBadgeVariant(dept.llmModel)} className="text-xs">
+                      {dept.llmModel}
+                    </Badge>
+                    {dept.artifacts.length > 0 && (
+                      <div className="text-xs text-muted-foreground">
+                        {dept.artifacts.length} artefato(s)
+                      </div>
+                    )}
+                    {dept.status === 'in-progress' && dept.completionPercentage && (
+                      <div className="w-full">
+                        <Progress value={dept.completionPercentage} className="h-1" />
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {activeTab === "overview" && !isEmbedded && (
           <ProjectOverview 
             stats={stats}
             onExportProject={() => toast({ title: "Exportando projeto...", description: "Download iniciará em breve." })}
@@ -320,37 +320,43 @@ export default function VirtualTeamDashboard() {
           />
         )}
 
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button 
-            size="lg" 
-            className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
-            onClick={startNextDepartment}
-            disabled={stats.inProgressDepartments > 0}
-          >
-            <Play className="w-4 h-4 mr-2" />
-            {stats.inProgressDepartments > 0 ? 'Aguarde Etapa Atual...' : 'Iniciar Próxima Etapa'}
-          </Button>
-          <Button variant="outline" size="lg" onClick={() => setShowConfigModal(true)}>
-            <Settings className="w-4 h-4 mr-2" />
-            Configurar LLMs
-          </Button>
-          <Button variant="outline" size="lg" onClick={() => setActiveTab("overview")}>
-            <BarChart3 className="w-4 h-4 mr-2" />
-            Ver Relatórios
-          </Button>
-        </div>
+        {!isEmbedded && (
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
+              onClick={startNextDepartment}
+              disabled={stats.inProgressDepartments > 0}
+            >
+              <Play className="w-4 h-4 mr-2" />
+              {stats.inProgressDepartments > 0 ? 'Aguarde Etapa Atual...' : 'Iniciar Próxima Etapa'}
+            </Button>
+            <Button variant="outline" size="lg" onClick={() => setShowConfigModal(true)}>
+              <Settings className="w-4 h-4 mr-2" />
+              Configurar LLMs
+            </Button>
+            <Button variant="outline" size="lg" onClick={() => setActiveTab("overview")}>
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Ver Relatórios
+            </Button>
+          </div>
+        )}
 
-        {/* Modals */}
-        <ConfigurationModal open={showConfigModal} onOpenChange={setShowConfigModal} />
-        <DepartmentDetailModal 
-          department={selectedDepartment}
-          open={showDetailModal}
-          onOpenChange={setShowDetailModal}
-          onStartWork={handleStartWork}
-          onApproveWork={handleApproveWork}
-        />
+        {!isEmbedded && (
+          <>
+            <ConfigurationModal open={showConfigModal} onOpenChange={setShowConfigModal} />
+            <DepartmentDetailModal 
+              department={selectedDepartment}
+              open={showDetailModal}
+              onOpenChange={setShowDetailModal}
+              onStartWork={handleStartWork}
+              onApproveWork={handleApproveWork}
+            />
+          </>
+        )}
       </div>
     </div>
   );
 }
+
+export default VirtualTeamDashboard;
